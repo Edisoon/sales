@@ -1,38 +1,36 @@
 ﻿@page "/countries"
 @inject IRepository repository
 
-<h3 class="align-content-md-center">Países</h3>
+<h3 class="text-center col-auto">Países</h3>
 
-@if(Countries is null)
-{
-    <p>Cargando...</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>País</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var country in Countries)
-            {
+<GenericList MyList="Countries">
+    <Body>
+
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td>
-                        @country.Name
-                    </td>
-                    <td>
-                        <a class="btn btn-warning oi oi-pencil"></a>
-                        <button class="btn btn-danger oi oi-trash"></button>
-                    </td>
+                    <th>País</th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var country in Countries!)
+                {
+                    <tr>
+                        <td>
+                            @country.Name
+                        </td>
+                        <td>
+                            <a class="btn btn-warning oi oi-pencil"></a>
+                            <button class="btn btn-danger oi oi-trash"></button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </Body>
+</GenericList>
 
-}
 
 @code {
     public List<Country>? Countries { get; set; }
