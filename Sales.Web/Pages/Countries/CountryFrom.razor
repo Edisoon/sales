@@ -1,0 +1,68 @@
+﻿@inject SweetAlertService sweetAertService
+<NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+
+<EditForm EditContext="editContext" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="row align-items-center justify-content-md-center">
+        <div class="col-md-6">
+            <InputText placeholder="Escribe el país" class="form-control" @bind-Value="Country.Name" />
+            <ValidationMessage For="@(()=> Country.Name)" />
+        </div>
+        <div class="col-md-auto">
+            <button type="submit" class="btn  btn-primary oi oi-circle-check"></button>
+            <button @onclick="ReturnAction" class="btn  btn-success oi oi-arrow-left"></button>
+        </div>
+    </div>
+
+</EditForm>
+
+
+@code {
+    private EditContext editContext = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public Country Country { get; set; } = null!;
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    public EventCallback ReturnAction { get; set; }
+
+    public bool FormPostedSuccessfuly { get; set; }
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Country);
+    }
+
+    private async Task OnBeforeInternalNavigation(LocationChangingContext context)
+    {
+        var formWasModified = editContext.IsModified();
+        if (!formWasModified || FormPostedSuccessfuly)
+        {
+            return;
+        }
+        var result = await sweetAertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmación",
+                Text = "¿Deseas abandonar la página y perder los cambios?",
+                Icon = SweetAlertIcon.Warning,
+                ShowCancelButton = true,
+                CancelButtonText = "No ",
+                ConfirmButtonText = "Si"
+                
+            });
+
+        var confirm = !string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+        context.PreventNavigation();
+    }
+}
